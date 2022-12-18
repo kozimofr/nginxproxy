@@ -1,0 +1,32 @@
+version: "2"
+
+volumes:
+  kozimo_nginxproxy_local_nginx_vhost:
+    name: kozimo_nginxproxy_local_nginx_vhost
+  kozimo_nginxproxy_local_nginx_html:
+    name: kozimo_nginxproxy_local_nginx_html
+  kozimo_nginxproxy_local_nginx_certs:
+    name: kozimo_nginxproxy_local_nginx_certs
+  # kozimo_nginxproxy_local_nginx_logs:
+  #   name: kozimo_nginxproxy_local_nginx_logs
+
+services:
+  nginx:
+    image: nginxproxy/nginx-proxy:0.8.0
+    container_name: kozimo_nginxproxy_local_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - kozimo_nginxproxy_local_nginx_certs:/etc/nginx/certs
+      - kozimo_nginxproxy_local_nginx_vhost:/etc/nginx/vhost.d
+      - kozimo_nginxproxy_local_nginx_html:/usr/share/nginx/html
+      # - kozimo_nginxproxy_local_nginx_logs:/var/log/nginx
+      - ./nginxproxy/custom_proxy.conf:/etc/nginx/conf.d/custom_proxy.conf
+    networks:
+      - kozimo_nginxproxy_local_network
+
+networks:
+  kozimo_nginxproxy_local_network:
+    name: kozimo_nginxproxy_local_network
